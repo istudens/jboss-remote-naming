@@ -65,6 +65,7 @@ public class HaRemoteNamingStore implements RemoteNamingStore {
      *                                       <code>connectionURIs</code> for establishing the first connection
      */
     public HaRemoteNamingStore(final long channelCreationTimeoutInMillis, final OptionMap channelCreationOptions, final long connectionTimeout, final CallbackHandler callbackHandler, final OptionMap connectOptions, final List<URI> connectionURIs, final Endpoint clientEndpoint, final boolean randomServer) {
+        logger.info("entering the constructor of HARemoteNamingStore, instance " + this);
         if (connectionURIs.isEmpty()) {
             throw new IllegalArgumentException("Cannot create a HA remote naming store without any servers to connect to");
         }
@@ -86,6 +87,7 @@ public class HaRemoteNamingStore implements RemoteNamingStore {
      *                               <code>namingStoreConnections</code> for establishing the first connection
      */
     public HaRemoteNamingStore(final List<RemoteNamingStoreConnectionInfo> namingStoreConnections, final boolean randomServer) {
+        logger.info("entering the constructor of HARemoteNamingStore, instance " + this);
         if (namingStoreConnections == null || namingStoreConnections.isEmpty()) {
             throw new IllegalArgumentException("Cannot create a HA remote naming store without any servers to connect to");
         }
@@ -144,6 +146,7 @@ public class HaRemoteNamingStore implements RemoteNamingStore {
      * @return The new remote naming store
      */
     private RemoteNamingStore failOverSequence(RemoteNamingStore attempted) throws NamingException {
+        logger.info("entering HARemoteNamingStore#failOverSequence(), instance " + this);
         assert Thread.holdsLock(this);
         final RemoteNamingStore currentNamingStore = this.currentNamingStore;
         if (attempted != null && attempted != currentNamingStore) {

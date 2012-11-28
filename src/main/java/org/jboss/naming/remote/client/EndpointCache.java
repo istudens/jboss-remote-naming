@@ -47,11 +47,33 @@ public class EndpointCache {
             cache.putIfAbsent(endpointHash, cacheEntry);
         }
         cacheEntry.referenceCount.incrementAndGet();
+
+        logger.info("==============================");
+        logger.info("EndpointCache.get(), instance " + this);
+        logger.infof("cacheEntry.endpoint = %s", cacheEntry.endpoint);
+        logger.infof("cacheEntry.referenceCount = %s", cacheEntry.referenceCount.get());
+        logger.info("stack trace:");
+        for (StackTraceElement ste : new Throwable().getStackTrace()) {
+            logger.infof("===== \t %s", ste);
+        }
+        logger.info("==============================");
+
         return cacheEntry.endpointWrapper;
     }
 
     public synchronized void release(final CacheKey endpointHash, final boolean async) {
         final CacheEntry cacheEntry = cache.get(endpointHash);
+
+        logger.info("------------------------------");
+        logger.info("EndpointCache.release(), instance " + this);
+        logger.infof("cacheEntry.endpoint = %s", cacheEntry.endpoint);
+        logger.infof("cacheEntry.referenceCount = %s", cacheEntry.referenceCount.get());
+        logger.info("stack trace:");
+        for (StackTraceElement ste : new Throwable().getStackTrace()) {
+            logger.infof("----- \t %s", ste);
+        }
+        logger.info("------------------------------");
+
         if (cacheEntry.referenceCount.decrementAndGet() == 0) {
             try {
                 if (async) {

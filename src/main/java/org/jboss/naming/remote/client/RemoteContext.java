@@ -52,6 +52,7 @@ public class RemoteContext implements Context, NameParser {
     private final List<CloseTask> closeTasks;
 
     private final AtomicBoolean closed = new AtomicBoolean();
+    private boolean finalized = false;
 
     public RemoteContext(final RemoteNamingStore namingStore, final Hashtable<String, Object> environment) {
         this(namingStore, environment, Collections.<CloseTask>emptyList());
@@ -66,6 +67,12 @@ public class RemoteContext implements Context, NameParser {
     }
 
     public RemoteContext(final Name prefix, final RemoteNamingStore namingStore, final Hashtable<String, Object> environment, final List<CloseTask> closeTasks) {
+        log.info("entering the constructor of RemoteContext, instance " + this);
+        log.info(this + "#finalized = " + finalized);
+        log.info("stack trace:");
+        for (StackTraceElement ste : new Throwable().getStackTrace()) {
+            log.infof("\t %s", ste);
+        }
         this.prefix = prefix;
         this.namingStore = namingStore;
         this.environment = environment;
@@ -73,6 +80,8 @@ public class RemoteContext implements Context, NameParser {
     }
 
     public Object lookup(final Name name) throws NamingException {
+        log.info("entering RemoteContext#lookup(), instance " + this);
+        log.info(this + "#finalized = " + finalized);
         if (isEmpty(name)) {
             return new RemoteContext(prefix, namingStore, environment);
         }
@@ -194,6 +203,9 @@ public class RemoteContext implements Context, NameParser {
     }
 
     public void finalize() {
+        log.info("entering RemoteContext#finalize, instance " + this);
+        log.info(this + "#finalized = " + finalized);
+        finalized = true;
         if(closed.compareAndSet(false, true)) {
             for (CloseTask closeTask : closeTasks) {
                 closeTask.close(true);
